@@ -1,7 +1,7 @@
 import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from 'react';
 
-const API_URL = 'http://localhost:3001/api/todos';
-const API_BASE_URL = 'http://localhost:3001';
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
+const API_URL = `${API_BASE_URL}/api/todos`;
 
 type TodoFile = {
   id: number;
@@ -208,4 +208,3 @@ function App() {
 }
 
 export default App;
-
