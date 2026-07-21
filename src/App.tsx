@@ -55,6 +55,7 @@ function App() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
+    const form = event.currentTarget;
 
     const trimmedTitle = title.trim();
     if (!trimmedTitle) {
@@ -82,7 +83,7 @@ function App() {
       setTodos((currentTodos) => [newTodo, ...currentTodos]);
       setTitle('');
       setFiles([]);
-      event.currentTarget.reset();
+      form.reset();
     } catch (requestError) {
       setError(requestError instanceof Error ? requestError.message : 'Failed to create todo');
     }
