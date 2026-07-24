@@ -1,7 +1,8 @@
-import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from 'react';
+import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
 const API_URL = `${API_BASE_URL}/api/todos`;
+const TODOS_PER_PAGE = 10;
 
 type TodoFile = {
   id: number;
@@ -20,32 +21,43 @@ type Todo = {
   files: TodoFile[];
 };
 
+type TodoPage = {
+  todos: Todo[];
+  page: number;
+  total: number;
+  totalPages: number;
+  remainingCount: number;
+};
+
 function App() {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [title, setTitle] = useState('');
   const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-
-  const remainingCount = useMemo(
-    () => todos.filter((todo) => !todo.completed).length,
-    [todos]
-  );
+  const [page, setPage] = useState(1);
+  const [totalTodos, setTotalTodos] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const [remainingCount, setRemainingCount] = useState(0);
 
   useEffect(() => {
-    void fetchTodos();
-  }, []);
+    void fetchTodos(page);
+  }, [page]);
 
-  async function fetchTodos(): Promise<void> {
+  async function fetchTodos(requestedPage: number): Promise<void> {
     try {
       setLoading(true);
       setError('');
-      const response = await fetch(API_URL);
+      const response = await fetch(`${API_URL}?page=${requestedPage}&limit=${TODOS_PER_PAGE}`);
       if (!response.ok) {
         throw new Error('Failed to load todos');
       }
-      const data: Todo[] = await response.json();
-      setTodos(data);
+      const data: TodoPage = await response.json();
+      setTodos(data.todos);
+      setPage(data.page);
+      setTotalTodos(data.total);
+      setTotalPages(data.totalPages);
+      setRemainingCount(data.remainingCount);
     } catch (requestError) {
       setError(requestError instanceof Error ? requestError.message : 'Failed to load todos');
     } finally {
@@ -79,8 +91,11 @@ function App() {
         throw new Error('Failed to create todo');
       }
 
-      const newTodo: Todo = await response.json();
-      setTodos((currentTodos) => [newTodo, ...currentTodos]);
+      await response.json();
+      setPage(1);
+      if (page === 1) {
+        await fetchTodos(1);
+      }
       setTitle('');
       setFiles([]);
       form.reset();
@@ -127,7 +142,7 @@ function App() {
         throw new Error('Failed to delete todo');
       }
 
-      setTodos((currentTodos) => currentTodos.filter((todo) => todo.id !== id));
+      await fetchTodos(page);
     } catch (requestError) {
       setError(requestError instanceof Error ? requestError.message : 'Failed to delete todo');
     }
@@ -164,7 +179,7 @@ function App() {
         {error ? <p className="status error">{error}</p> : null}
         {loading ? <p className="status">Loading...</p> : null}
 
-        {!loading && todos.length === 0 ? (
+        {!loading && totalTodos === 0 ? (
           <p className="status">No todos yet.</p>
         ) : (
           <ul className="todo-list">
@@ -203,6 +218,28 @@ function App() {
             ))}
           </ul>
         )}
+
+        {totalTodos > TODOS_PER_PAGE ? (
+          <nav className="pagination" aria-label="Todo pages">
+            <button
+              type="button"
+              onClick={() => setPage((currentPage) => currentPage - 1)}
+              disabled={page === 1}
+            >
+              Previous
+            </button>
+            <span>
+              Page {page} of {totalPages}
+            </span>
+            <button
+              type="button"
+              onClick={() => setPage((currentPage) => currentPage + 1)}
+              disabled={page === totalPages}
+            >
+              Next
+            </button>
+          </nav>
+        ) : null}
       </section>
     </main>
   );

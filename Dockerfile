@@ -12,6 +12,10 @@ RUN bun run build
 #----------------------------------------------
 FROM nginx:alpine
 
+RUN apk update
+RUN apk add --no-cache curl iputils-ping
+
+
 COPY --from=builder /app/dist /usr/share/nginx/html
 
 EXPOSE 80
