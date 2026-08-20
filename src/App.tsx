@@ -1,7 +1,7 @@
 import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 
-const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
-const API_URL = `${API_BASE_URL}/api/todos`;
+const API_BASE_URL = '/api';
+const API_URL = `${API_BASE_URL}/todos`;
 const TODOS_PER_PAGE = 10;
 
 type TodoFile = {
@@ -205,7 +205,7 @@ function App() {
                     {todo.files.map((file) => (
                       <a
                         key={file.id}
-                        href={`${API_BASE_URL}${file.url}`}
+                        href={`${API_BASE_URL}/${file.url}`}
                         target="_blank"
                         rel="noreferrer"
                       >
