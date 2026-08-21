@@ -97,7 +97,7 @@ input {
 }
 
 .todo-form button {
-  background: #2563eb;
+  background: #D72323;
   color: #eff6ff;
 }
 
@@ -182,6 +182,7 @@ input {
 }
 
 @media (max-width: 640px) {
+
   .todo-header,
   .todo-form,
   .todo-item {
