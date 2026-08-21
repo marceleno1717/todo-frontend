@@ -8,5 +8,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Testing
-        run: echo "${{ github.sha }}"
+      - name: 1. Dump GitHub's OIDC Token Claims
+        run: |
+          # Fetch the raw JWT token from GitHub
+          TOKEN=$(curl -s -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=sts.amazonaws.com" | jq -r '.value')
+
+          # Decode the payload block (second part of the JWT)
+          echo "=== EXACT CLAIMS GITHUB IS SENDING TO AWS ==="
+          echo "$TOKEN" | cut -d'.' -f2 | base64 -d 2>/dev/null | jq .
+
+      - name: 2. Force AWS to reveal the exact error
+        run: |
+          TOKEN=$(curl -s -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=sts.amazonaws.com" | jq -r '.value')
+
+          echo "=== AWS REJECTION REASON ==="
+          aws sts assume-role-with-web-identity \
+            --role-arn ${{ secrets.AWS_ROLE_ID }} \
+            --role-session-name DebugSession \
+            --web-identity-token "$TOKEN"
