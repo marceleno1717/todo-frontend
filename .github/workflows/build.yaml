@@ -39,7 +39,8 @@ jobs:
       - name: Get runner public ip
         id: ip
         run: |
-          PUBIP=$(curl wtfismyip.com)
+          # PUBIP=$(curl wtfismyip.com)
+          PUBIP=$(curl checkip.amazonaws.com)
           echo "ip=$PUBIP" >> $GITHUB_OUTPUT
 
       - name: Configure AWS creds
@@ -64,6 +65,9 @@ jobs:
 
       - name: Change deployment image
         run: kubectl set image deployment todo-frontend todo-frontend=marceleno17/todo-frontend:${{ github.sha }}
+
+      - name: Wait for rollout
+        run: kubectl rollout status deployment/todo-frontend --timeout=120s
 
       - name: Revoke Security Group Inbound Rule
         if: always()
