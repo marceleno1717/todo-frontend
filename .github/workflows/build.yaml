@@ -5,6 +5,10 @@ on:
   push:
     branches: [main]
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -25,7 +29,9 @@ jobs:
       - uses: docker/build-push-action@v7
         with:
           push: true
-          tags: marceleno17/todo-frontend:latest
+          tags: |
+            marceleno17/todo-frontend:${{ github.sha }}
+            marceleno17/todo-frontend:latest
 
   deploy:
     runs-on: ubuntu-latest
@@ -41,8 +47,7 @@ jobs:
       - name: Configure AWS creds
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-to-assume: ${{ secrets.AWS_ROLE_ID }}
           aws-region: us-east-1
 
       - name: Authorize Security Group Inbound Rule
@@ -59,8 +64,8 @@ jobs:
           echo "${{ secrets.KUBE_CONFIG_DATA }}" | base64 --decode > ~/.kube/config
           chmod 600 ~/.kube/config
 
-      - name: Testing connection
-        run: kubectl rollout restart deployment todo-frontend
+      - name: Change deployment image
+        run: kubectl set image deployment todo-frontend todo-frontend=marceleno17/todo-frontend:${{ github.sha }}
 
       - name: Revoke Security Group Inbound Rule
         if: always()
