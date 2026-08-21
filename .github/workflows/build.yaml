@@ -26,3 +26,13 @@ jobs:
         with:
           push: true
           tags: marceleno17/todo-frontend:latest
+
+  k8s-apply:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Apply config
+        run: echo "${{ secrets.KUBE_CONFIG_DATA }}" | base64 --decode > ~/.kube/config
+
+      - name: Testing connection
+        run: kubectl get deployments
