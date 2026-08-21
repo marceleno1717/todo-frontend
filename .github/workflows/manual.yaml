@@ -1,0 +1,12 @@
+name: Manual-for-testing
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get runner ip
+        run: curl https://ipv4.icanhazip.com
