@@ -10,5 +10,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Test
-        run: echo hello
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+
+      - name: bun version
+        run: bun -v
+
+      - uses: docker/login-action@v4
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+      - uses: docker/build-push-action@v7
+        with:
+          push: true
+          tags: marceleno17/todo-frontend:latest
