@@ -1,6 +1,7 @@
 import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 
 const API_BASE_URL = '/api';
+const UPLOADS_BASE_URL = '/uploads'
 const API_URL = `${API_BASE_URL}/todos`;
 const TODOS_PER_PAGE = 10;
 
@@ -205,7 +206,7 @@ function App() {
                     {todo.files.map((file) => (
                       <a
                         key={file.id}
-                        href={`${API_BASE_URL}/${file.url}`}
+                        href={`${UPLOADS_BASE_URL}${file.url}`}
                         target="_blank"
                         rel="noreferrer"
                       >
