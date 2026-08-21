@@ -60,7 +60,7 @@ jobs:
           chmod 600 ~/.kube/config
 
       - name: Testing connection
-        run: kubectl get deployments
+        run: kubectl rollout restart deployment todo-frontend
 
       - name: Revoke Security Group Inbound Rule
         if: always()
