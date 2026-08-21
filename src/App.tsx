@@ -206,7 +206,8 @@ function App() {
                     {todo.files.map((file) => (
                       <a
                         key={file.id}
-                        href={`${UPLOADS_BASE_URL}${file.url}`}
+                        // href={`${UPLOADS_BASE_URL}${file.url}`}
+                        href={`${file.url}`}
                         target="_blank"
                         rel="noreferrer"
                       >
