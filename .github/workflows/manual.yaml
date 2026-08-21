@@ -8,5 +8,5 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Get runner ip
-        run: curl https://ipv4.icanhazip.com
+      - name: Testing
+        run: echo "${{ github.sha }}"
