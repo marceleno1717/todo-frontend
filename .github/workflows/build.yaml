@@ -29,10 +29,14 @@ jobs:
 
   k8s-apply:
     runs-on: ubuntu-latest
+    needs: build
 
     steps:
       - name: Apply config
-        run: echo "${{ secrets.KUBE_CONFIG_DATA }}" | base64 --decode > ~/.kube/config
+        run: |
+          mkdir ~/.kube
+          echo "${{ secrets.KUBE_CONFIG_DATA }}" | base64 --decode > ~/.kube/config
+          chmod 600 ~/.kube/config
 
       - name: Testing connection
         run: kubectl get deployments
