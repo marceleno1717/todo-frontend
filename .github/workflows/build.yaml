@@ -16,16 +16,18 @@ jobs:
       - name: bun install
         run: bun ci
 
-      - uses: docker/login-action@v4
-        with:
-          username: ${{ vars.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
-      - uses: docker/build-push-action@v7
-        with:
-          push: true
-          tags: |
-            marceleno17/todo-frontend:${{ github.sha }}
-            marceleno17/todo-frontend:latest
+      - name: Simulating docker build
+        run: echo "Image built and pushed!!"
+      # - uses: docker/login-action@v4
+      #   with:
+      #     username: ${{ vars.DOCKERHUB_USERNAME }}
+      #     password: ${{ secrets.DOCKERHUB_PASSWORD }}
+      # - uses: docker/build-push-action@v7
+      #   with:
+      #     push: true
+      #     tags: |
+      #       marceleno17/todo-frontend:${{ github.sha }}
+      #       marceleno17/todo-frontend:latest
 
   deploy:
     runs-on: ubuntu-latest
